@@ -2,68 +2,81 @@
 const int CommandConclusionDossier = 2;
 const int CommandDeleteDosier = 3;
 const int CommandSearchByLastName = 4;
-const int CommandExit = 5;
 
-string[] dossiersFullName = new string[0];
-string[] dossiersJobTitle = new string[0];
-int userChoice = 0;
+string[,] fullNameDossiers = new string[3,2] { { "Архипов", "Столяров" }, { "Михаил", "Фёдор" }, { "Юрьевич", "Ибрагимович" } };
+string[] dossiersJobTitle = new string[2] {"уборщик", "дворник"};
+int userChoise = 0;
 int numberToDeleteDossier;
+int commandExit = 5;
 
-while (userChoice != CommandExit)
-{
+while (userChoise != commandExit)
+{ 
     Console.WriteLine($"Добро пожаловать в программу управления досье. Выберите действие: " +
         $"\n{CommandAddDosier}: добавить досье в массив;" +
         $"\n{CommandConclusionDossier}: вывести весь массив досье;" +
-        $"\n{CommandDeleteDosier}: удалить досье из массива;" +
+        $"\n{CommandDeleteDosier}: удалить массив из досье;" +
         $"\n{CommandSearchByLastName}: поиск досье по фамилии." +
-        $"\n{CommandExit}: выйти из программы");
-    userChoice = Convert.ToInt32(Console.ReadLine());
-
-    switch (userChoice)
+        $"\n{commandExit}: выйти из программы");
+    userChoise = Convert.ToInt32(Console.ReadLine());
+    switch (userChoise)
     {
         case CommandAddDosier:
-            dossiersJobTitle = AddJobTitleDosier(dossiersJobTitle);
-            dossiersFullName = AddNameDosier(dossiersFullName);
+            AddDossier();
             break;
 
         case CommandConclusionDossier:
-            ConclusionDossier(dossiersFullName, dossiersJobTitle);
+            ConclusionDossier(fullNameDossiers, dossiersJobTitle);
             break;
 
         case CommandDeleteDosier:
             numberToDeleteDossier = InputNumber();
-            dossiersFullName = DeleteDossier(dossiersFullName, numberToDeleteDossier);
-            dossiersJobTitle = DeleteDossier(dossiersJobTitle, numberToDeleteDossier);
+            DeleteDossier(numberToDeleteDossier);
             break;
 
         case CommandSearchByLastName:
-            SearchByLastName(dossiersFullName, dossiersJobTitle);
-            break;
-
-        case CommandExit:
+            SearchByLastName(fullNameDossiers, dossiersJobTitle);
             break;
 
         default:
-            Console.WriteLine("Я вас не понял");
+            if (userChoise != commandExit)
+            {
+                Console.WriteLine("Я вас не понял");
+            }
             break;
     }
 }
-
-static string[] AddNameDosier(string[] fullName)
+void AddDossier()
 {
-    string[] tempFullName = new string[fullName.Length + 1];
-
-    for (int i = 0; i < fullName.Length; i++)
-    {
-        tempFullName[i] = fullName[i];
-    }
-
-    Console.WriteLine("Введите фамилию, имя и отчество через пробел.");
-    tempFullName[tempFullName.Length - 1] = Console.ReadLine();
-    return tempFullName;
+    dossiersJobTitle = AddJobTitleDossier(dossiersJobTitle);
+    fullNameDossiers = AddNameDossier(fullNameDossiers);
 }
 
-static string[] AddJobTitleDosier(string[] jobTitle)
+void DeleteDossier(int deleteNumber)
+{
+    fullNameDossiers = DeleteNameDossier(fullNameDossiers, deleteNumber);
+    dossiersJobTitle = DeleteJobTitleDossier(dossiersJobTitle, deleteNumber);
+}
+static string[,] AddNameDossier(string[,] fullName)
+{
+    string[,] tempFullName = new string[3, fullName.GetLength(1) + 1];
+
+    for (int i = 0; i < fullName.GetLength(0); i++)
+    {
+        for (int j = 0; j < fullName.GetLength(1); j++)
+        {
+            tempFullName[i, j] = fullName[i, j];
+        }
+    }
+
+    Console.WriteLine("Введите фамилию.");
+    tempFullName[0, tempFullName.GetLength(1) - 1] = Console.ReadLine();
+    Console.WriteLine("Введите имя.");
+    tempFullName[1, tempFullName.GetLength(1) - 1] = Console.ReadLine();
+    Console.WriteLine("Введите отчество.");
+    tempFullName[2, tempFullName.GetLength(1) - 1] = Console.ReadLine();
+    return tempFullName;
+}
+static string[] AddJobTitleDossier(string[] jobTitle)
 {
     string[] tempJobTitle = new string[jobTitle.Length + 1];
 
@@ -76,52 +89,83 @@ static string[] AddJobTitleDosier(string[] jobTitle)
     tempJobTitle[^1] = Console.ReadLine();
     return tempJobTitle;
 }
-
-static void ConclusionDossier(string[] fullName, string[] jobTitle)
+static void ConclusionDossier(string[,] fullName, string[] jobTitle)
 {
     Console.WriteLine("Вот все досье: ");
 
-    for (int i = 0; i < fullName.Length; i++)
+    for (int i = 0; i < jobTitle.Length; i++)
     {
-        Console.WriteLine((i + 1) + ": " + fullName[i] + " - " + jobTitle[i]);
+        Console.WriteLine((i + 1) + ": " + fullName[0, i] + " " + fullName[1, i] + " " + fullName[2, i] + " - " + jobTitle[i]);
     }
 }
-
 static int InputNumber()
 {
     Console.WriteLine("Досье под каким номером вы хотите удалить?");
     int numberToDeleteDossier = Convert.ToInt32(Console.ReadLine());
     return numberToDeleteDossier;
 }
-
-static string[] DeleteDossier(string[] array, int deleteNumber)
+static string[,] DeleteNameDossier(string[,] fullName, int deleteNumber)
 {
-    string[] tempArray = new string[array.Length - 1];
-    int index = 0;
+    string[,] tempFullName = new string[fullName.GetLength(0), fullName.GetLength(1) - 1];
 
-    for (int i = 0; i < array.Length; i++)
+    for (int i = 0; i < deleteNumber - 1; i++)
     {
-        if (i != deleteNumber - 1)
+        for (int j = 0; j < fullName.GetLength(0); j++)
         {
-            tempArray[index] = array[i];
-            index++;
+            tempFullName[j, i] = fullName[j, i];
         }
     }
 
-    return tempArray;
+    for (int i = deleteNumber; i < fullName.GetLength(1); i++)
+    {
+        for (int j = 0; j < fullName.GetLength(0); j++)
+        {
+            tempFullName[j, i - 1] = fullName[j, i];
+        }
+    }
+
+    return tempFullName;
 }
 
-static void SearchByLastName(string[] fullName, string[] jobTitle)
+
+static string[] DeleteJobTitleDossier(string[] jobTitle, int deleteNumber)
 {
+    string[] tempJobTitle = new string[jobTitle.Length - 1];
+    int index = 0;
+
+    for (int i = 0; i < deleteNumber - 1; i++)
+    {
+        tempJobTitle[index] = jobTitle[i];
+        index++;
+    }
+
+    for (int i = deleteNumber; i < jobTitle.Length; i++)
+    {
+        tempJobTitle[index] = jobTitle[i];
+        index++;
+    }
+
+    return tempJobTitle;
+}
+
+static void SearchByLastName(string[,] fullName, string[] jobTitle)
+{
+    bool didItHatch = true;
     Console.WriteLine("Введите фамилию, которую хотели бы найти");
     string enterLastName = Console.ReadLine();
     Console.WriteLine("Выводим все досье с такой фамилией...");
 
     for (int i = 0; i < jobTitle.Length; i++)
     {
-        if (fullName[i].StartsWith(enterLastName))
+        if (fullName[0, i] == enterLastName)
         {
-            Console.WriteLine((i + 1) + ": " + fullName[i] + " - " + jobTitle[i]);
+            Console.WriteLine((i + 1) + ": " + fullName[0, i] + " " + fullName[1, i] + " " + fullName[2, i] + " - " + jobTitle[i]);
+            didItHatch = false;
         }
+    }
+
+    if (didItHatch)
+    {
+        Console.WriteLine("Нет ни одного человека с такой фамилией.\n");
     }
 }
