@@ -4,7 +4,7 @@ const int CommandDeleteDosier = 3;
 const int CommandSearchByLastName = 4;
 const int CommandExit = 5;
 
-string[] fullNames = new string[3] { "Архипов Михаил Юрьевич", "Столяров Фёдор Ибрагимович", "Иван " };
+string[] fullNames = new string[3] { "Архипов Михаил Юрьевич", "Столяров Фёдор Ибрагимович", "Иванов Иван Иванович" };
 string[] dossiersJobTitle = new string[3] { "уборщик", "дворник", "директор" };
 int userChoice = 0;
 
